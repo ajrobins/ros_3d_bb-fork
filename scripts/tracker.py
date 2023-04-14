@@ -25,13 +25,13 @@ VISUALIZATION = True
 # Send log to output?
 VERBOSE = True
 # Send additional debug log to output?
-DEBUG = False
+DEBUG = True
 # Gather and output timing information?
 TIMING = True
 
 
 class BoundingBox:
-    def __init__(self, x=0, y=0, z=0, size_x=0, size_y=0, size_z=0, bounding_box=None):
+    def __init__(self, x=0, y=0, z=0, class_id=2, probability=2, size_x=0, size_y=0, size_z=0, bounding_box=None):
         """Create a bounding box with all values passed separately or using a BoundingBox3D message"""
 
         if not bounding_box:
@@ -41,6 +41,8 @@ class BoundingBox:
             self.size_x = size_x
             self.size_y = size_y
             self.size_z = size_z
+            self.class_id = class_id
+            self.probability = probability
         else:
             self.x = bounding_box.center.position.x
             self.y = bounding_box.center.position.y
@@ -48,6 +50,8 @@ class BoundingBox:
             self.size_x = bounding_box.size.x
             self.size_y = bounding_box.size.y
             self.size_z = bounding_box.size.z
+            self.class_id = bounding_box.class_id
+            self.probability = bounding_box.probability
 
     def __str__(self):
         return (
@@ -64,6 +68,10 @@ class BoundingBox:
             + self.y
             + ", size_z: "
             + self.z
+            + ", class_id: "
+            + self.class_id
+            + ", probability: "
+            + self.probability
             + "}"
         )
 
@@ -77,6 +85,9 @@ class DetectedObject:
         self.x = bounding_box.x
         self.y = bounding_box.y
         self.z = bounding_box.z
+        self.class_id = bounding_box.class_id
+        self.probability = bounding_box.probability
+       
         self.update(bounding_box)
         self.uid = uid
 
@@ -104,6 +115,10 @@ class DetectedObject:
             + str(self.v_y)
             + ", v_z: "
             + str(self.v_z)
+            + ", class_id: "
+            + str(self.class_id)
+            + ", probability: "
+            + str(self.probability)
             + "}"
         )
 
@@ -122,6 +137,10 @@ class DetectedObject:
         self.x = x
         self.y = y
         self.z = bounding_box.z
+        self.class_id = bounding_box.class_id
+        self.probability = bounding_box.probability
+        
+
         self.diameter = bounding_box.size_x
         self.height = bounding_box.size_y
         self.disappeared = 0
@@ -165,7 +184,6 @@ class Tracker:
 
     def new_object(self, bounding_box):
         """Registers a newly detected object, appending it to the "objects" list."""
-
         self.objects.append(DetectedObject(self.current_uid, bounding_box))
 
         # Increment the UID for the next detected object.
@@ -426,17 +444,20 @@ class RosTracker:
                     original_pose_stamped, transform
                 )
                 # Don't transform the size vector, as the pose is already transformed!
-
                 new_bb = BoundingBox3D(
                     transformed_pose_stamped.header,
+                    bounding_box.class_id,
+                    bounding_box.probability,
                     transformed_pose_stamped.pose,
                     bounding_box.size,
                 )
 
                 if DEBUG:
                     rospy.logdebug(new_bb)
+                new_bb_obj = BoundingBox(bounding_box=new_bb)
+                self.bounding_boxes.append(new_bb_obj)
+                # print("bbox.append[0]: ", str(self.bounding_boxes[0]))
 
-                self.bounding_boxes.append(BoundingBox(bounding_box=new_bb))
         except (
             tf2_ros.LookupException,
             tf2_ros.ConnectivityException,
@@ -467,37 +488,42 @@ class RosTracker:
         # Visualization
         if VISUALIZATION:
             for obj in self.tracker.objects:
-                x = obj.x
-                y = obj.y
-                z = obj.z
+                x = float(obj.x)
+                y = float(obj.y)
+                z = float(obj.z)
+
+                class_id = obj.class_id
+                probability = obj.probability
                 height = obj.height
                 diameter = obj.diameter
                 v_x = x + obj.v_x * self.framerate
                 v_y = y + obj.v_y * self.framerate
-                v_z = y + obj.v_z * self.framerate
-                print("UID + ", obj.uid, "\n")
+                # v_z = y + obj.v_z * self.framerate
+                # print("UID + ", obj.uid, "\n")
                 # Send data from the tracker
-                self.rviz.text(obj.uid, x, y, z, height, duration=self.duration)
+                self.rviz.text(obj.uid,probability, x, y, z, height, str(class_id), duration=self.duration)
                 self.rviz.cylinder(
                     obj.uid,
+                    probability,
                     x,
                     y,
                     z,
                     height,
+                    str(class_id),
                     diameter,
                     duration=self.duration,
                     alpha=0.5,
                     trajectory=False,
                 )
-                self.rviz.arrow(obj.uid, x, y, v_x, v_y, v_z, duration=self.duration)
+                # self.rviz.arrow(obj.uid,class_id, x, y, v_x, v_y, str(probability), duration=self.duration)
                 # Send data from the predictor
                 # Only the x and y
                 predicted_x, predicted_y, = self.predictor.predictions[
                     obj.uid
                 ][:2]
                 # Note: obj.uid + 1000 is not probably not an ideal way to create multiple markers.
-                self.rviz.arrow(obj.uid + 1000, x, y, predicted_x,
-                predicted_y, duration=self.duration, r=0, g=1, b=0)
+                # self.rviz.arrow(obj.uid + 1000,class_id, x, y, predicted_x,
+                # predicted_y, duration=self.duration, r=0, g=1, b=0)
 
             # Send the data to self.marker_array_topic (usually "visualization_marker_array")
             self.rviz.publish()

@@ -8,8 +8,8 @@
 Header header
 
 # Class of the detected object and probability it is that object 
-#int8 class
-#int8 probability
+int8 class_id
+int8 probability	#to be a value between 1-100
 
 # 3D position and orientation
 geometry_msgs/Pose center

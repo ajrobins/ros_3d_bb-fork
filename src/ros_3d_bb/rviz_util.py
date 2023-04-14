@@ -42,32 +42,36 @@ class RViz:
         self.trajectories = {}
 
     # Source: https://docs.m2stud.io/cs/ros_additional/06-L3-rviz/
-    def text(self, uid=0, x=0.0, y=0.0, z=0.0, height=1.1, text="", scaling=0.3, duration=1, alpha=0.9):
-        if text == "":
-            text = str(uid)
+    def text(self, uid=0, probability=0, x=0.0, y=0.0, z=0.0, height=1.1, class_id="", scaling=0.3, duration=1, alpha=0.9):
+        if class_id == "":
+            class_id = str(uid)
         marker = Marker(
             type=Marker.TEXT_VIEW_FACING,
-            ns="TEST",
+            ns=str(class_id),
             id=uid * 3,
             lifetime=rospy.Duration(duration),
-            pose=Pose(Point(x, y, z), Quaternion(0, 0, 0, 1)),
+            pose=Pose(Point(x, y, height), Quaternion(0, 0, 0, 1)),
             scale=Vector3(scaling, scaling, scaling),
             header=Header(frame_id=self.frame_id),
             color=ColorRGBA(0.0, 1.0, 0.0, alpha),
-            text=text)
+            text=class_id)
         self.marker_array.markers.append(marker)
         self.marker_id += 1
 
-    def cylinder(self, uid=0, x=0.0, y=0.0, z=0.0, height=1.0, diameter=0.2, duration=1, alpha=0.9, trajectory=True):
+    def cylinder(self, uid=0, class_id=0, x=0.0, y=0.0, z=0.0, height=1.0, text="", diameter=0.2, duration=1, alpha=0.9, trajectory=True):
+        # if text == "":
+        # text = str(uid)
+        # print("x,y,z: ", x, y, z)
         marker = Marker(
             type=Marker.CYLINDER,
-            ns=str(uid),
+            ns=str(class_id),
             id=uid * 3 + 1,
             lifetime=rospy.Duration(duration),
             pose=Pose(Point(x, y, z), Quaternion(0, 0, 0, 1)),
-            scale=Vector3(diameter+0.01, diameter+0.01, height),
+            scale=Vector3(diameter*1.05, diameter*1.05, height),
             header=Header(frame_id=self.frame_id),
-            color=ColorRGBA(0.0, 0.0, 1.0, alpha))
+            color=ColorRGBA(0.0, 0.0, 1.0, alpha),
+            text=text)
         self.marker_array.markers.append(marker)
         self.marker_id += 1
 
@@ -89,16 +93,20 @@ class RViz:
             self.marker_array.markers.append(self.trajectories[uid])
 
 
-    def arrow(self, uid=0, x=0.0, y=0.0, z=0.0, v_x=0.0, v_y=0.0, v_z=0.0, duration=1, alpha=0.9, r=1, g=0, b=0):
+    def arrow(self, uid=0, class_id=0, x=0.0, y=0.0, z=0.0, v_x=0.0, v_y=0.0, text="",  duration=1, alpha=0.9, r=1, g=0, b=0):
+        if text == "":
+            text = str(uid)
         marker = Marker(
             type=Marker.ARROW,
-            ns=str(uid),
+            ns=str(class_id),
             id=uid * 3 + 2,
             lifetime=rospy.Duration(duration),
-            points=[Point(x, y, z), Point(v_x, v_y, v_z)],
+            points=[Point(x, y, 0), Point(v_x, v_y, 0)],
             scale=Vector3(0.05, 0.1, 0),
             header=Header(frame_id=self.frame_id),
-            color=ColorRGBA(r, g, b, alpha))
+            color=ColorRGBA(r, g, b, alpha),
+            text=text)
+        
         marker.pose.orientation.w = 1
         self.marker_array.markers.append(marker)
         self.marker_id += 1

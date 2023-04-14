@@ -22,7 +22,7 @@
 
     <!-- Arguments for tracker.launch -->
     <arg name="frame_camera_link"       default="xtion_link" doc="The camera link coordinate frame" />
-    <arg name="frame_world"             default="odom" doc="The world coordinate frame" />
+    <arg name="frame_world"             default="map" doc="The world coordinate frame" />
     <arg name="publish_transform"       default="True" doc="Whether to broadcast the realsense_mount transform" />
     <arg name="marker_array_topic"      default="visualization_marker_array" doc="The visualization marker array topic" />
 

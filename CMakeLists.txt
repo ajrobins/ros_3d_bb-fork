@@ -61,6 +61,7 @@ catkin_python_setup()
    FILES
    BoundingBox3D.msg
    BoundingBox3DArray.msg
+   Detection2DMeta.msg
  )
 
 ## Generate services in the 'srv' folder

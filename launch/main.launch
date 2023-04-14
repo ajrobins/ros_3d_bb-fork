@@ -3,7 +3,7 @@
     <arg name="camera_info" default="/xtion/rgb/camera_info" doc="CameraInfo topic" />
     <arg name="camera_image" default="/xtion/rgb/image_raw" doc="Image topic" />
     <arg name="camera_depth" default="/xtion/depth_registered/points" doc="Image topic" />
-    <arg name="bb_topic" default="/yolov7_converter/bboxArray" doc="2D bounding box topic" />
+    <arg name="bb_topic" default="/yolov7_converter/converted2Ddetection" doc="2D bounding box topic" />
     <arg name="frame_id" default="xtion_rgb_optical_frame" doc="The coordinate frame of the camera" />
     <arg name="raw_image_out_topic" default="ros_3d_bb/raw" doc="The unmodified color image output topic" />
     <arg name="color_image_out_topic" default="ros_3d_bb/color" doc="The modified color image output topic." />

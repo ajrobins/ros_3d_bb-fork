@@ -4,7 +4,7 @@ import sys
 import numpy as np
 import cv2
 from cv_bridge import CvBridge, CvBridgeError
-from std_msgs.msg import Header, Int32MultiArray, Float64MultiArray
+from std_msgs.msg import Header, Int32MultiArray, Float64MultiArray, Int8
 from sensor_msgs.msg import Image, CameraInfo
 from ros_3d_bb.msg import BoundingBox3D, BoundingBox3DArray
 from geometry_msgs.msg import Pose, Point, Vector3, Quaternion
@@ -12,6 +12,7 @@ import message_filters
 import time
 import pyrealsense2 as rs2
 from ros_3d_bb import Timer
+from ros_3d_bb.msg import Detection2DMeta
 
 
 class Ros_3d_bb:
@@ -51,7 +52,7 @@ class Ros_3d_bb:
         camera_info_topic="/xtion/rgb/camera_info",
         color_image_topic="/xtion/rgb/image_raw",
         depth_image_topic="/xtion/depth_registered/image_raw",
-        bb_topic="/yolov7_converter/bboxArray",
+        bb_topic="/yolov7_converter/converted2Ddetection",
         depth_scale=0.001,
         frame_id="xtion_rgb_optical_frame",
         raw_image_out_topic="raw_image_out_topic",
@@ -153,12 +154,14 @@ class Ros_3d_bb:
         """
 
         # Variables to hold both the current color and depth image + bounding box etc
+        # as well as the class id and detection probability
         self.raw_image = 0
         self.color_image = 0
         self.depth_image = 0
         self.corner_top_left = 0
         self.corner_bottom_right = 0
         self.bounding_boxes_3d = {}
+        
         # Using the RealSense D435i, this value should be 0.001 (1 mm scale).
         self.depth_scale = rospy.get_param("~depth_scale", default=depth_scale)
         # The ROS coordinate frame of the camera
@@ -282,7 +285,7 @@ class Ros_3d_bb:
 
         # For the bounding boxes:
         bb_sub = message_filters.Subscriber(
-            self.bb_topic, Int32MultiArray, queue_size=1
+            self.bb_topic, Detection2DMeta, queue_size=1
         )
         if self.verbose:
             rospy.loginfo("Subscribed to topic: " + bb_sub.sub.resolved_name)
@@ -622,12 +625,17 @@ class Ros_3d_bb:
         # Not using custom messages for compatibility reasons.
         # Also, commons_msgs does not have a suitable array type available.
 
+        
+        
         if self.timing_detailed:
             timer = Timer("bb_callback")
 
         nr_of_bounding_boxes = len(bb_multiarray.data) // 4
         self.bounding_boxes_3d = {}
 
+        if nr_of_bounding_boxes != 0:
+            self.classes = bb_multiarray.classes
+            self.probability = bb_multiarray.probabilities
         if self.timing_detailed:
             timer.update()
 
@@ -640,7 +648,7 @@ class Ros_3d_bb:
                 bb_multiarray.data[2 + 4 * i],
                 bb_multiarray.data[3 + 4 * i],
             )
-
+            
             if self.timing_detailed:
                 timer.update()
 
@@ -789,6 +797,8 @@ class Ros_3d_bb:
         stamp = rospy.Time.now()
         frame_id = self.frame_id
 
+
+        bbox_count = 0
         for bb_data in self.bounding_boxes_3d.values():
             # Only publish valid bb_data.
             # Note: the lines
@@ -802,6 +812,8 @@ class Ros_3d_bb:
                 bb_array.boxes.append(
                     BoundingBox3D(
                         header=Header(stamp=stamp, frame_id=frame_id),
+                        class_id=int(self.classes[bbox_count]),
+                        probability=int(self.probability[bbox_count]),
                         center=Pose(
                             Point(x=bb_data[0], y=bb_data[1], z=bb_data[2]),
                             Quaternion(0, 0, 0, 1),
