@@ -2,7 +2,7 @@
 # documentation on all multiarrays.
 
 std_msgs/MultiArrayLayout  layout        # specification of data layout
-int32[]           data          # array of data
+int64[]           data          # array of data
 
 #These must correspond to the same order the data[] is in
 int32[]	   classes	 # array of classes (up to 4)

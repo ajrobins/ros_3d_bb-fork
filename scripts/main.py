@@ -4,7 +4,7 @@ import sys
 import numpy as np
 import cv2
 from cv_bridge import CvBridge, CvBridgeError
-from std_msgs.msg import Header, Int32MultiArray, Float64MultiArray, Int8
+from std_msgs.msg import Header, Int64MultiArray, Float64MultiArray, Int8
 from sensor_msgs.msg import Image, CameraInfo
 from ros_3d_bb.msg import BoundingBox3D, BoundingBox3DArray
 from geometry_msgs.msg import Pose, Point, Vector3, Quaternion
@@ -635,7 +635,7 @@ class Ros_3d_bb:
 
         if nr_of_bounding_boxes != 0:
             self.classes = bb_multiarray.classes
-            self.probability = bb_multiarray.probabilities
+            self.probabilities = bb_multiarray.probabilities
         if self.timing_detailed:
             timer.update()
 
@@ -813,7 +813,7 @@ class Ros_3d_bb:
                     BoundingBox3D(
                         header=Header(stamp=stamp, frame_id=frame_id),
                         class_id=int(self.classes[bbox_count]),
-                        probability=int(self.probability[bbox_count]),
+                        probability=int(self.probabilities[bbox_count]),
                         center=Pose(
                             Point(x=bb_data[0], y=bb_data[1], z=bb_data[2]),
                             Quaternion(0, 0, 0, 1),
@@ -900,7 +900,7 @@ class Ros_3d_bb:
 
 
 def main(args):
-    print("STARTING 3D BB")
+    # print("STARTING 3D BB")
     rospy.init_node("ros_3d_bb", disable_signals=False)
     node = Ros_3d_bb(simulation=True, verbose=True)
     rospy.on_shutdown(node.shutdown)

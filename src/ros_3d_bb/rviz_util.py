@@ -42,19 +42,22 @@ class RViz:
         self.trajectories = {}
 
     # Source: https://docs.m2stud.io/cs/ros_additional/06-L3-rviz/
-    def text(self, uid=0, probability=0, x=0.0, y=0.0, z=0.0, height=1.1, class_id="", scaling=0.3, duration=1, alpha=0.9):
+    def text(self, uid=0, x=0.0, y=0.0, z=0.0, height=1.1, class_id=0, scaling=0.3, duration=1, alpha=0.9):
+        # print("uid, x, y, z, height, class: ", uid, x, y, z, height, class_id)
         if class_id == "":
-            class_id = str(uid)
+            text = str(uid)
+        else:
+            text = str(class_id) + ": " + str(uid) 
         marker = Marker(
             type=Marker.TEXT_VIEW_FACING,
             ns=str(class_id),
-            id=uid * 3,
+            id=uid+1000,
             lifetime=rospy.Duration(duration),
-            pose=Pose(Point(x, y, height), Quaternion(0, 0, 0, 1)),
+            pose=Pose(Point(x, y, z+height), Quaternion(0, 0, 0, 1)),
             scale=Vector3(scaling, scaling, scaling),
             header=Header(frame_id=self.frame_id),
             color=ColorRGBA(0.0, 1.0, 0.0, alpha),
-            text=class_id)
+            text=text)
         self.marker_array.markers.append(marker)
         self.marker_id += 1
 
@@ -65,7 +68,7 @@ class RViz:
         marker = Marker(
             type=Marker.CYLINDER,
             ns=str(class_id),
-            id=uid * 3 + 1,
+            id=uid,
             lifetime=rospy.Duration(duration),
             pose=Pose(Point(x, y, z), Quaternion(0, 0, 0, 1)),
             scale=Vector3(diameter*1.05, diameter*1.05, height),
@@ -101,11 +104,10 @@ class RViz:
             ns=str(class_id),
             id=uid * 3 + 2,
             lifetime=rospy.Duration(duration),
-            points=[Point(x, y, 0), Point(v_x, v_y, 0)],
+            points=[Point(x, y, z), Point(v_x, v_y, z)],
             scale=Vector3(0.05, 0.1, 0),
             header=Header(frame_id=self.frame_id),
-            color=ColorRGBA(r, g, b, alpha),
-            text=text)
+            color=ColorRGBA(r, g, b, alpha))
         
         marker.pose.orientation.w = 1
         self.marker_array.markers.append(marker)

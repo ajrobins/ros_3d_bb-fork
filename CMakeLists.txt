@@ -9,6 +9,7 @@ project(ros_3d_bb)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   rospy
+  roscpp
   cv_bridge
   message_filters
   pcl_conversions
@@ -129,7 +130,7 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-include
+# include
   ${catkin_INCLUDE_DIRS}
 )
 
@@ -175,10 +176,10 @@ install(TARGETS yolov7_converter
 
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
- catkin_install_python(PROGRAMS
-   scripts/main.py
-   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
- )
+#  catkin_install_python(PROGRAMS
+#  test_objToDB.py
+#  test-subs-pubs.py   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+#  )
 
 ## Mark executables for installation
 ## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_executables.html

@@ -12,7 +12,7 @@
     <arg name="publish_empty"           default="False" doc="Whether to publish empty bounding boxes when no object are found" />
     <arg name="yolo_image_out"          default="yolo_result_out" doc="Output image topic" />
     <arg name="output_frame"            default="camera_link" doc="The output image coordinate frame" />-->
-
+    <arg name="model" default="10_negs"/>
     <!-- Arguments for main.launch -->
     <arg name="camera_info"             default="/xtion/rgb/camera_info" doc="CameraInfo topic" />
     <arg name="camera_depth"            default="/xtion/depth_registered/points" doc="Image topic" />
@@ -37,8 +37,9 @@
         <arg name="output_frame"            value="$(arg output_frame)" />
         <arg name="simulation"              value="True" />
     </include> -->
-    <include file="$(find yolov7_ros)/launch/yolov7.launch"/>
-
+    <include file="$(find yolov7_ros)/launch/yolov7.launch">
+         <arg name="model" value="$(arg model)"/>
+    </include>
   
   <node name="yolov7_converter" pkg="ros_3d_bb" type="yolov7_converter" output="screen"/>  
 

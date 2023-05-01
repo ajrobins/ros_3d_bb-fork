@@ -23,9 +23,9 @@ import tf2_geometry_msgs
 # Send visualization messages to be used in RViz?
 VISUALIZATION = True
 # Send log to output?
-VERBOSE = True
+VERBOSE = False
 # Send additional debug log to output?
-DEBUG = True
+DEBUG = False
 # Gather and output timing information?
 TIMING = True
 
@@ -171,7 +171,7 @@ class Tracker:
         Returns a dictionary of all the existing objects' velocities.
     """
 
-    def __init__(self, max_frames_disappeared=30, starting_id=0):
+    def __init__(self, max_frames_disappeared=100, starting_id=0):
         """Initializes the tracker
 
         An optional disappearance threshold and starting ID for detections can be provided
@@ -501,7 +501,7 @@ class RosTracker:
                 # v_z = y + obj.v_z * self.framerate
                 # print("UID + ", obj.uid, "\n")
                 # Send data from the tracker
-                self.rviz.text(obj.uid,probability, x, y, z, height, str(class_id), duration=self.duration)
+                self.rviz.text(obj.uid, x, y, z, height, class_id, duration=self.duration)
                 self.rviz.cylinder(
                     obj.uid,
                     probability,
@@ -515,15 +515,16 @@ class RosTracker:
                     alpha=0.5,
                     trajectory=False,
                 )
-                # self.rviz.arrow(obj.uid,class_id, x, y, v_x, v_y, str(probability), duration=self.duration)
+                # self.rviz.arrow(obj.uid,class_id, x, y, z, v_x, v_y, str(probability), duration=self.duration)
                 # Send data from the predictor
                 # Only the x and y
                 predicted_x, predicted_y, = self.predictor.predictions[
                     obj.uid
                 ][:2]
+                # print("pred x, y: ", predicted_x, predicted_y)
                 # Note: obj.uid + 1000 is not probably not an ideal way to create multiple markers.
-                # self.rviz.arrow(obj.uid + 1000,class_id, x, y, predicted_x,
-                # predicted_y, duration=self.duration, r=0, g=1, b=0)
+                self.rviz.arrow(obj.uid+1000,class_id, x, y, z, predicted_x,
+                predicted_y, duration=self.duration, r=0, g=1, b=0)
 
             # Send the data to self.marker_array_topic (usually "visualization_marker_array")
             self.rviz.publish()

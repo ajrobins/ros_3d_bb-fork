@@ -381,9 +381,26 @@ Visualization Manager:
       Marker Topic: /visualization_marker_array
       Name: MarkerArray
       Namespaces:
-        0: true
-        1000: true
-        TEST: true
+        14: true
+        20: true
+        35: true
+        41: true
+        45: true
+        62: true
+        63: true
+        73: true
+        77: true
+        85: true
+        86: true
+        88: true
+        91: true
+        92: true
+        93: true
+        94: true
+        95: true
+        96: true
+        97: true
+        98: true
       Queue Size: 100
       Value: true
     - Class: rviz/Marker
@@ -391,9 +408,26 @@ Visualization Manager:
       Marker Topic: visualization_marker
       Name: Marker
       Namespaces:
-        0: true
-        1000: true
-        TEST: true
+        14: true
+        20: true
+        35: true
+        41: true
+        45: true
+        62: true
+        63: true
+        73: true
+        77: true
+        85: true
+        86: true
+        88: true
+        91: true
+        92: true
+        93: true
+        94: true
+        95: true
+        96: true
+        97: true
+        98: true
       Queue Size: 100
       Value: true
     - Alpha: 1
@@ -951,6 +985,16 @@ Visualization Manager:
         frontiers: true
       Queue Size: 100
       Value: true
+    - Alpha: 0.699999988079071
+      Class: rviz/Map
+      Color Scheme: map
+      Draw Behind: false
+      Enabled: true
+      Name: Map
+      Topic: /move_base/local_costmap/costmap
+      Unreliable: false
+      Use Timestamp: false
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -978,7 +1022,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/ThirdPersonFollower
-      Distance: 12.886958122253418
+      Distance: 18.105249404907227
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -986,17 +1030,17 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: -0.9876835346221924
-        Y: -0.12542998790740967
-        Z: -2.384185791015625e-07
+        X: -0.44552111625671387
+        Y: -0.3085647225379944
+        Z: -2.1957305307296338e-06
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.24981483817100525
+      Pitch: 0.6548148989677429
       Target Frame: <Fixed Frame>
-      Yaw: 2.475409746170044
+      Yaw: 2.270408868789673
     Saved: ~
 Window Geometry:
   Displays:

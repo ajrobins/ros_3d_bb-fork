@@ -2,7 +2,7 @@
 #include <vision_msgs/Detection2D.h>
 #include <vision_msgs/Detection2DArray.h>
 #include <iostream>
-#include <std_msgs/Int32MultiArray.h>
+#include <std_msgs/Int64MultiArray.h>
 #include <ros_3d_bb/Detection2DMeta.h>
 using namespace std;
 
@@ -37,8 +37,8 @@ private:
     for (const auto& detection : detection_msg->detections)
     {
 
-      if (count > 3)
-        return;
+     
+     
       //clear array
       // array.data.clear();
 

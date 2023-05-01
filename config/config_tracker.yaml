@@ -1,7 +1,7 @@
 ---
 # Verbosity and debug are set as parameters to gain better performance.
-verbose: True # Should the program be verbose?
-debug: True # Whether to send extra log
+verbose: False # Should the program be verbose?
+debug: False # Whether to send extra log
 timing: False # Whether to enable timing of the code
 visualization: True # Whether to send visualization messages to be used in RViz
 max_frames_disappeared: 30 # Disappearance threshold
