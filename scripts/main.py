@@ -4,7 +4,7 @@ import sys
 import numpy as np
 import cv2
 from cv_bridge import CvBridge, CvBridgeError
-from std_msgs.msg import Header, Int64MultiArray, Float64MultiArray, Int8
+from std_msgs.msg import Header, Int32MultiArray, Float64MultiArray, Int8
 from sensor_msgs.msg import Image, CameraInfo
 from ros_3d_bb.msg import BoundingBox3D, BoundingBox3DArray
 from geometry_msgs.msg import Pose, Point, Vector3, Quaternion
@@ -426,7 +426,6 @@ class Ros_3d_bb:
 
         bb_width = self.corner_bottom_right[0] - self.corner_top_left[0]
         bb_height = self.corner_bottom_right[1] - self.corner_top_left[1]
-
         if self.timing_detailed:
             timer.update()
 
@@ -509,6 +508,8 @@ class Ros_3d_bb:
                 self.corner_bottom_right[1],
                 stride_y,
             )
+           
+
             xx, yy = np.meshgrid(x_range, y_range)
             # Important! Scaling by a factor of 0.001 so the results are in meters, not mm!
             depths = self.depth_image[yy, xx] * self.depth_scale

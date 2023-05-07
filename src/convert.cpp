@@ -29,7 +29,6 @@ private:
  
   void detectionCallback(const vision_msgs::Detection2DArray::ConstPtr& detection_msg)
   {
-    int count = 0;
 
     ros_3d_bb::Detection2DMeta data;
 
@@ -41,13 +40,22 @@ private:
      
       //clear array
       // array.data.clear();
-
       double x_min = detection.bbox.center.x - detection.bbox.size_x / 2;
       double y_min = detection.bbox.center.y - detection.bbox.size_y / 2;
       double x_max = detection.bbox.center.x + detection.bbox.size_x / 2;
       double y_max = detection.bbox.center.y + detection.bbox.size_y / 2;
-    //   cout << "x_min = " << x_min << ", y_min = " << y_min << ", x_max = " << x_max << ", y_max = " << y_max << "\n";
-      
+      // cout << "x_min = " << x_min << ", y_min = " << y_min << ", x_max = " << x_max << ", y_max = " << y_max << "\n";
+      // cout << "detection.bbox.size_x " << detection.bbox.size_x << " detection.bbox.size_y " << detection.bbox.size_y << "\n";
+
+
+        //This keeps the bounding boxes within the bounds of the camera. Otherwise large (usually false) detections cause in index error in ros_3d_bb
+        if (x_max >= 640) {
+          x_max = 639;
+        }
+        if (y_max >= 480) {
+          y_max = 479;
+        }
+
       data.data.push_back(x_min);
       data.data.push_back(y_min);
       data.data.push_back(x_max);
@@ -57,7 +65,6 @@ private:
       data.classes.push_back(detection.results[0].id);
       data.probabilities.push_back(int(detection.results[0].score * 100));
 
-      count++;
   
     }
     pub_converted_data_.publish(data);

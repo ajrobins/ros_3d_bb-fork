@@ -527,7 +527,8 @@ class RosTracker:
                 predicted_y, duration=self.duration, r=0, g=1, b=0)
 
             # Send the data to self.marker_array_topic (usually "visualization_marker_array")
-            self.rviz.publish()
+            if len(self.tracker.objects) > 0:
+                self.rviz.publish()
 
         if TIMING:
             timer.stop(
